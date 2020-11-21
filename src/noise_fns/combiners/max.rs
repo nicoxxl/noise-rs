@@ -1,26 +1,22 @@
 use crate::noise_fns::NoiseFn;
 
-/// Noise function that outputs the larger of the two output values from two source
+/// Noise function that outputs the smaller of the two output values from two source
 /// functions.
-pub struct Max<'a, T> {
-    /// Outputs a value.
-    pub source1: &'a dyn NoiseFn<T>,
+pub struct Max<A, B>(A, B);
 
-    /// Outputs a value.
-    pub source2: &'a dyn NoiseFn<T>,
-}
-
-impl<'a, T> Max<'a, T> {
-    pub fn new(source1: &'a dyn NoiseFn<T>, source2: &'a dyn NoiseFn<T>) -> Self {
-        Self { source1, source2 }
+impl<A, B> Max<A, B> {
+    pub fn new(source1: A, source2: B) -> Self {
+        Self(source1, source2)
     }
 }
 
-impl<'a, T> NoiseFn<T> for Max<'a, T>
+impl<T, A, B> NoiseFn<T> for Max<A, B>
 where
     T: Copy,
+    A: NoiseFn<T>,
+    B: NoiseFn<T>,
 {
     fn get(&self, point: T) -> f64 {
-        (self.source1.get(point)).max(self.source2.get(point))
+        (self.0.get(point)).max(self.1.get(point))
     }
 }

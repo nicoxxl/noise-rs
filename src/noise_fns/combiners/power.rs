@@ -2,25 +2,21 @@ use crate::noise_fns::NoiseFn;
 
 /// Noise function that raises the output value from the first source function
 /// to the power of the output value of the second source function.
-pub struct Power<'a, T> {
-    /// Outputs a value.
-    pub source1: &'a dyn NoiseFn<T>,
+pub struct Power<A, B>(A, B);
 
-    /// Outputs a value.
-    pub source2: &'a dyn NoiseFn<T>,
-}
-
-impl<'a, T> Power<'a, T> {
-    pub fn new(source1: &'a dyn NoiseFn<T>, source2: &'a dyn NoiseFn<T>) -> Self {
-        Self { source1, source2 }
+impl<A, B> Power<A, B> {
+    pub fn new(source1: A, source2: B) -> Self {
+        Self(source1, source2)
     }
 }
 
-impl<'a, T> NoiseFn<T> for Power<'a, T>
+impl<T, A, B> NoiseFn<T> for Power<A, B>
 where
     T: Copy,
+    A: NoiseFn<T>,
+    B: NoiseFn<T>,
 {
     fn get(&self, point: T) -> f64 {
-        (self.source1.get(point)).powf(self.source2.get(point))
+        (self.0.get(point)).powf(self.1.get(point))
     }
 }

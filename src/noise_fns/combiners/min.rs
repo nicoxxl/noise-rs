@@ -2,25 +2,21 @@ use crate::noise_fns::NoiseFn;
 
 /// Noise function that outputs the smaller of the two output values from two source
 /// functions.
-pub struct Min<'a, T> {
-    /// Outputs a value.
-    pub source1: &'a dyn NoiseFn<T>,
+pub struct Min<A, B>(A, B);
 
-    /// Outputs a value.
-    pub source2: &'a dyn NoiseFn<T>,
-}
-
-impl<'a, T> Min<'a, T> {
-    pub fn new(source1: &'a dyn NoiseFn<T>, source2: &'a dyn NoiseFn<T>) -> Self {
-        Self { source1, source2 }
+impl<A, B> Min<A, B> {
+    pub fn new(source1: A, source2: B) -> Self {
+        Self(source1, source2)
     }
 }
 
-impl<'a, T> NoiseFn<T> for Min<'a, T>
+impl<T, A, B> NoiseFn<T> for Min<A, B>
 where
     T: Copy,
+    A: NoiseFn<T>,
+    B: NoiseFn<T>,
 {
     fn get(&self, point: T) -> f64 {
-        (self.source1.get(point)).min(self.source2.get(point))
+        (self.0.get(point)).min(self.1.get(point))
     }
 }

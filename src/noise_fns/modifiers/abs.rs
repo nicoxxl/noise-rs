@@ -2,18 +2,21 @@ use crate::noise_fns::NoiseFn;
 
 /// Noise function that outputs the absolute value of the output value from the
 /// source function.
-pub struct Abs<'a, T> {
-    /// Outputs a value.
-    pub source: &'a dyn NoiseFn<T>,
+pub struct Abs<S> {
+    pub source: S,
 }
 
-impl<'a, T> Abs<'a, T> {
-    pub fn new(source: &'a dyn NoiseFn<T>) -> Self {
+impl<S> Abs<S> {
+    pub fn new(source: S) -> Self {
         Self { source }
     }
 }
 
-impl<'a, T> NoiseFn<T> for Abs<'a, T> {
+impl<S, T> NoiseFn<T> for Abs<S>
+where
+    T: Copy,
+    S: NoiseFn<T>,
+{
     fn get(&self, point: T) -> f64 {
         (self.source.get(point)).abs()
     }
